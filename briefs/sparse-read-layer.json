@@ -1,0 +1,23 @@
+{
+  "width": 1600,
+  "height": 900,
+  "format": "branded_infographic",
+  "theme": "dark",
+  "thesis": "A reading-control layer in front of the agent cuts token use sharply while preserving task quality, without touching the agent model.",
+  "rationale": "The two panels make the caption's tension visible in one glance: the same page, read in full versus read sparsely, with the 92.9% figure as the proof that reading less does not cost the answer.",
+  "title": "A Layer That *Reads* Less",
+  "subhead": "Sparse reading cut agent token use by up to 92.9%",
+  "nodes": [
+    { "id": "full_doc", "label": "Full Document", "icon": "document", "color_role": "neutral" },
+    { "id": "sparse_read", "label": "SparseRead", "icon": "search", "color_role": "primary" }
+  ],
+  "edges": [],
+  "insight_cards": [
+    { "value": "92.9%", "caption": "Up to 92.9% fewer tokens across six models", "icon": "chart" },
+    { "value": "89.0%", "caption": "Up to 89.0% less wall time", "icon": "clock" },
+    { "value": "97%", "caption": "Quality preserved or improved in 97% of settings", "icon": "shield" },
+    { "value": "", "caption": "Agent model untouched, only the interface", "icon": "gear" }
+  ],
+  "chart": null,
+  "layout_wishes": "direction left_to_right, spacing airy, finish glow"
+}

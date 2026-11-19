@@ -1,0 +1,20 @@
+{
+  "width": 1080, "height": 1080,
+  "format": "data_chart", "theme": "dark",
+  "thesis": "One GLM-5.3 coding post-training run lifted four benchmarks by very different amounts; the strongest starter gained least.",
+  "rationale": "Four bars of the same run's gains on one scale show the spread; DeepSWE, the strongest start, has the narrowest gain.",
+  "title": "Same Run, Very *Different* Gains",
+  "subhead": "One GLM-5.3 coding post-training run, four benchmarks, very different jumps",
+  "nodes": [], "edges": [],
+  "insight_cards": [ { "value": "+6.5pp", "caption": "Strongest start, DeepSWE at 66.90%, had the narrowest gain", "icon": "search" } ],
+  "chart": {
+    "metric": "Gain in percentage points",
+    "bars": [
+      { "label": "Terminal-Bench4 (from 34.8%)", "value": "+21.3pp", "highlight": false },
+      { "label": "SWE-marathon (from 30%)", "value": "+15.0pp", "highlight": false },
+      { "label": "sudo L7 (from 14.5%)", "value": "+14.4pp", "highlight": false },
+      { "label": "DeepSWE (from 66.90%)", "value": "+6.5pp", "highlight": true }
+    ],
+    "source": "Source: Edwin Chen, LinkedIn post"
+  }
+}

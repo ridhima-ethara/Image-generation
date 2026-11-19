@@ -1,0 +1,23 @@
+{
+  "width": 1600,
+  "height": 900,
+  "format": "branded_infographic",
+  "theme": "dark",
+  "thesis": "Zeroing under 0.05% of weights retains prior-task accuracy under RL, while full fine-tuning, LoRA and random sparse fine-tuning lose up to 5.4 points.",
+  "rationale": "The image shows four post-training methods side by side with two stat cards: Deletion Tuning stays near base accuracy, while FFT, LoRA and random sparse fine-tuning lose up to 5.4 points — carrying the caption's argument that what training selects to remove matters more than how much it moves.",
+  "title": "Deletion *Tuning* Forgets Far Less",
+  "subhead": "FFT, LoRA and random sparse fine-tuning lose up to 5.4 points",
+  "nodes": [
+    { "id": "deletion", "label": "Deletion Tuning", "icon": "shield", "color_role": "primary" },
+    { "id": "fft", "label": "Full Fine-Tuning", "icon": "server", "color_role": "neutral" },
+    { "id": "lora", "label": "LoRA", "icon": "gear", "color_role": "neutral" },
+    { "id": "sparse", "label": "Sparse FT", "icon": "branch", "color_role": "neutral" }
+  ],
+  "edges": [],
+  "insight_cards": [
+    { "value": "", "caption": "Deletion Tuning stays near base accuracy", "icon": "shield" },
+    { "value": "5.4 pts", "caption": "Others lose up to 5.4 points under RL", "icon": "warning" }
+  ],
+  "chart": null,
+  "layout_wishes": "direction left_to_right, spacing airy, finish glow"
+}

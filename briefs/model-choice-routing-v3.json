@@ -1,0 +1,153 @@
+{
+ "thesis": "Choosing Carbon, Argon or Hydrogen is now a per-task routing decision, not one model for everything.",
+ "turn": "many_parts",
+ "format": "systems_diagram",
+ "concepts": [
+  {
+   "family": "systems_diagram",
+   "idea": "A left-to-right routing diagram. A Task node feeds one Routing node, which fans out to three models. Carbon and Argon share the deep-reasoning branches, and Hydrogen sits apart on a bright accent branch for everyday coding.",
+   "sentence": "Model choice is like a router's fan-out because each task is sent along its own route instead of one model handling everything.",
+   "scores": {
+    "thesis_fit": 5,
+    "clarity": 5,
+    "novelty": 3,
+    "truth": 5,
+    "brand": 5
+   },
+   "penalty": -3,
+   "total": 20
+  },
+  {
+   "family": "people_places",
+   "idea": "A rail junction where one track splits. Two lines are marked Carbon and Argon, and one fast line is marked Hydrogen. The switch is the per-task routing decision.",
+   "sentence": "Model choice is like a rail junction because each task is switched onto the track that suits it, which is routing rather than one fixed line.",
+   "scores": {
+    "thesis_fit": 5,
+    "clarity": 4,
+    "novelty": 4,
+    "truth": 3,
+    "brand": 4
+   },
+   "penalty": -3,
+   "total": 17
+  },
+  {
+   "family": "cross_domain",
+   "idea": "Air-traffic runway assignment. Each incoming task gets a runway: long runways for Carbon and Argon, and a short quick runway for Hydrogen.",
+   "sentence": "Model choice is like runway assignment because each task is routed to the strip that fits it, not every flight to one runway.",
+   "scores": {
+    "thesis_fit": 4,
+    "clarity": 3,
+    "novelty": 4,
+    "truth": 3,
+    "brand": 3
+   },
+   "penalty": -3,
+   "total": 14
+  }
+ ],
+ "chosen_concept": 0,
+ "rationale": "The flow runs left to right. A single Task enters, the Routing node decides, and the flow splits three ways. That split is the thesis: the model is picked per task, not once for everything. Carbon and Argon sit on matching deep-purple branches labelled 'deep reasoning'. Hydrogen gets the one bright accent branch labelled 'everyday coding', so the routing choice shows in both colour and position. The only sequence drawn is the one the caption states: a task, a routing decision, then a model. No result is shown as a step. I dropped the infographic cards to meet the format change and to keep the diagram a clean fan-out. The rail-junction concept scored lower on truth because it implies fixed physical tracks the caption never describes.",
+ "theme": "dark",
+ "use_magenta": false,
+ "title": "Model Choice Is Now *Routing*",
+ "subhead": "Carbon and Argon reason deep; Hydrogen moves fast on everyday coding.",
+ "nodes": [
+  {
+   "id": "task",
+   "label": "Task",
+   "role": "thinking level dialled per task",
+   "icon": "file-text",
+   "color_role": "environment"
+  },
+  {
+   "id": "routing",
+   "label": "Routing",
+   "role": "picks model per task",
+   "icon": "git-branch",
+   "color_role": "accent"
+  },
+  {
+   "id": "carbon",
+   "label": "Carbon",
+   "role": "reasons deep",
+   "icon": "layers",
+   "color_role": "state"
+  },
+  {
+   "id": "argon",
+   "label": "Argon",
+   "role": "reasons deep",
+   "icon": "layers",
+   "color_role": "state"
+  },
+  {
+   "id": "hydrogen",
+   "label": "Hydrogen",
+   "role": "fast on everyday coding",
+   "icon": "fast-forward",
+   "color_role": "action"
+  }
+ ],
+ "edges": [
+  {
+   "from": "task",
+   "to": "routing",
+   "label": "sent to",
+   "color_role": "neutral"
+  },
+  {
+   "from": "routing",
+   "to": "carbon",
+   "label": "deep reasoning",
+   "color_role": "state"
+  },
+  {
+   "from": "routing",
+   "to": "argon",
+   "label": "deep reasoning",
+   "color_role": "state"
+  },
+  {
+   "from": "routing",
+   "to": "hydrogen",
+   "label": "everyday coding",
+   "color_role": "action"
+  }
+ ],
+ "insight_cards": [],
+ "chart": null,
+ "facts_used": [
+  {
+   "text": "Carbon, Argon, Hydrogen (model names)",
+   "quote": "Choosing between Carbon, Argon and Hydrogen is now a routing decision made per task"
+  },
+  {
+   "text": "Routing / picks model per task",
+   "quote": "a routing decision made per task, not a single model choice for everything"
+  },
+  {
+   "text": "Carbon / Argon: reasons deep",
+   "quote": "Carbon and Argon reason deep; Hydrogen moves fast on everyday coding."
+  },
+  {
+   "text": "Hydrogen: fast on everyday coding",
+   "quote": "Carbon and Argon reason deep; Hydrogen moves fast on everyday coding."
+  },
+  {
+   "text": "Task: thinking level dialled per task",
+   "quote": "Four thinking levels dial deliberation per task"
+  }
+ ],
+ "alt_text": "Dark Ethara diagram titled 'Model Choice Is Now Routing'. Read left to right: a Task node, where the thinking level is dialled per task, feeds a central Routing node that picks the model per task. Routing fans out three ways. Two deep-purple branches labelled 'deep reasoning' lead to Carbon and Argon. A separate bright-purple branch labelled 'everyday coding' leads to Hydrogen.",
+ "unresolved_issues": [
+  "Format switched from branded_infographic to systems_diagram because branded_infographic was used in 2 of the last 3 images. data_chart is not possible because the source states no comparable figures. systems_diagram was used in the newest image, so every concept carries the -3 penalty; it is the only renderable format left.",
+  "The four insight cards were dropped because the systems_diagram format has no card slot: cleaner code edits, updated safeguards shipping with Hydrogen, and availability in AI Studio, Antigravity, Search and the Gemini app. Only 'four thinking levels dial deliberation per task' is kept, as the Task node's role. The number four itself is not shown.",
+  "The CAPTION field again held a previous designer spec, not the original social caption. All facts are quoted from that spec text and could not be checked against the real caption or evidence. Verify the Carbon/Argon/Hydrogen roles and the thinking-levels claim against the source before rendering.",
+  "Cannot confirm the title is not the caption's opening line, because the real caption was not provided.",
+  "The 'Task' node is named in the source only as 'per task'. It is shown as the input to routing and nothing more about it is claimed."
+ ],
+ "width": 1080,
+ "height": 1080,
+ "caption": "the shared designer instructions (appendix), with this canvas's sizes.\n\n````text\nCanvas: 1080x1080px.\nLOGO BAND (no text across the full width): y 0-145px; its corner x 0-324px is pure background for the logo. The title starts just below the band (by y 183px), on one line.\n\nAllowed colours:\n- accent primary: #8B2CF5\n- accent deep: #5E1BC7\n- accent bright: #A855F7\n- accent glow: #C084FC\n- neutral 1: #000000\n- neutral 2: #0B0E14\n- neutral 3: #121724\n- neutral 4: #1F2433\n- neutral 5: #3A3F55\n- neutral 6: #8A8FA5\n- neutral 7: #E6E8EF\n- neutral 8: #F6F7FA\n- neutral 9: #FFFFFF\n\nSPEC\nFormat: branded_infographic\nTheme: dark\nThesis (what the image must argue): Choosing between Carbon, Argon and Hydrogen is now a routing decision made per task, not a single model choice for everything.\nWhy this picture: The routing hub with three spokes shows exactly what the caption argues: model choice is now a per-task routing decision, with Hydrogen visually set apart as the fast lane for everyday coding while Carbon and Argon stay the shared deep-reasoning path.\nTitle: Model Choice Is Now *Routing*\nSubhead: Carbon and Argon reason deep; Hydrogen moves fast on everyday coding.\nNode routing: Routing [icon branch, colour primary]\nNode carbon: Carbon [icon gear, colour deep]\nNode argon: Argon [icon gear, colour deep]\nNode hydrogen: Hydrogen [icon gear, colour accent]\nEdge routing -> carbon \"deep reasoning\" [solid, colour deep]\nEdge routing -> argon \"deep reasoning\" [solid, colour deep]\nEdge routing -> hydrogen \"speed, coding tasks\" [solid, colour accent]\nInsight card: Four thinking levels dial deliberation per task [icon clock]\nInsight card: Cleaner code edits for everyday software engineering [icon code]\nInsight card: Updated safeguards ship with Hydrogen [icon shield]\nInsight card: Live in AI Studio, Antigravity, Search, Gemini app [icon cloud]\nLayout wishes: direction auto, spacing airy, finish glow\n\nTEXT (the only text on the page, each exactly once):\n1. Model Choice Is Now Routing\n2. Carbon and Argon reason deep; Hydrogen moves fast on everyday coding.\n3. Routing\n4. Carbon\n5. Argon\n6. Hydrogen\n7. KEY INSIGHTS\n8. Four thinking levels dial deliberation per task\n9. Cleaner code edits for everyday software engineering\n10. Updated safeguards ship with Hydrogen\n11. Live in AI Studio, Antigravity, Search, Gemini app"
+}

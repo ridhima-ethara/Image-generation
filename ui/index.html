@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ethara Image Agent</title>
+<style>
+  :root {
+    --bg: #0B0E14; --panel: #121724; --panel-2: #1F2433; --line: #2A3042; --text: #E6E8EF; --muted: #8A8FA5;
+    --accent: #8B2CF5; --accent-2: #A855F7; --ok: #22C55E; --warn: #F59E0B; --err: #EF4444;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+  header { padding: 14px 28px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 12px; }
+  header h1 { font-size: 16px; margin: 0; font-weight: 600; }
+  header h1 span { color: var(--accent-2); }
+  .spacer { flex: 1; }
+  main { display: grid; grid-template-columns: 420px 1fr; min-height: calc(100vh - 57px); }
+  aside { border-right: 1px solid var(--line); padding: 22px 26px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+  label { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px; }
+  label small { text-transform: none; letter-spacing: 0; font-weight: 400; }
+  textarea, select, input { width: 100%; background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font: inherit; }
+  textarea:focus, select:focus, input:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
+  #caption { min-height: 190px; resize: vertical; }
+  #evidence { min-height: 90px; resize: vertical; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .size { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  button { font: inherit; font-weight: 600; border: 0; border-radius: 8px; padding: 11px 16px; cursor: pointer; }
+  .primary { background: var(--accent); color: #fff; width: 100%; }
+  .primary:hover:not(:disabled) { background: var(--accent-2); }
+  .primary:disabled { opacity: .55; cursor: progress; }
+  .ghost { background: transparent; color: var(--text); border: 1px solid var(--line); padding: 8px 14px; }
+  .ghost:hover { background: var(--panel); }
+  .hint { font-size: 12px; color: var(--muted); margin: 4px 0 0; }
+  .error { color: var(--err); white-space: pre-wrap; display: none; font-size: 13px; }
+  details summary { cursor: pointer; color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+  details[open] summary { margin-bottom: 10px; }
+  details > div { display: flex; flex-direction: column; gap: 12px; }
+  section { padding: 22px 26px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+  .work { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 18px; }
+  .stage { min-height: 460px; border: 1px dashed var(--line); border-radius: 12px; display: grid; place-items: center; padding: 18px; background: repeating-conic-gradient(#10141d 0 25%, #0B0E14 0 50%) 0 0/24px 24px; }
+  .stage img { max-width: 100%; max-height: 66vh; border-radius: 4px; box-shadow: 0 10px 40px rgba(0,0,0,.55); }
+  .empty { color: var(--muted); text-align: center; }
+  .spinner { width: 34px; height: 34px; border: 3px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .9s linear infinite; margin: 0 auto 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .side { display: flex; flex-direction: column; gap: 14px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+  .card h3 { margin: 0 0 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .concepts { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .concept { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; cursor: pointer; transition: border-color .12s, background .12s; }
+  .concept:hover { border-color: var(--accent-2); }
+  .concept.sel { border-color: var(--accent); background: rgba(139,44,245,.10); }
+  .concept h4 { margin: 0 0 4px; font-size: 14px; color: #fff; }
+  .concept .fam { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--accent-2); margin-bottom: 8px; }
+  .concept p { margin: 6px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+  .concept p b { color: var(--text); font-weight: 600; }
+  .concept details { margin-top: 8px; }
+  .concept summary { font-size: 11px; color: var(--accent-2); cursor: pointer; }
+  .concept dl { margin: 8px 0 0; font-size: 11.5px; color: var(--muted); }
+  .concept dt { color: var(--text); font-weight: 600; margin-top: 6px; }
+  .flow { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; font-size: 12px; color: var(--muted); }
+  .flow span.on { color: var(--accent-2); font-weight: 600; }
+  .rec { background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 10px; padding: 14px; }
+  .log { font: 12px/1.6 ui-monospace, Menlo, monospace; color: var(--muted); max-height: 240px; overflow-y: auto; white-space: pre-wrap; }
+  .log b { color: var(--text); font-weight: 500; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; letter-spacing: .04em; }
+  .b-ready { background: rgba(34,197,94,.15); color: var(--ok); }
+  .b-needs_review { background: rgba(245,158,11,.15); color: var(--warn); }
+  .b-fmt { background: rgba(139,44,245,.18); color: var(--accent-2); }
+  ul.issues { margin: 6px 0 0; padding-left: 18px; font-size: 13px; }
+  ul.issues li { margin-bottom: 4px; }
+  .kv { font-size: 13px; }
+  .kv div { margin-bottom: 6px; }
+  .kv span { color: var(--muted); }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .actions a { text-decoration: none; }
+  #editBox { min-height: 64px; resize: vertical; }
+  h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0; }
+  .history { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+  .history button { padding: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; text-align: left; color: var(--text); font-weight: 400; }
+  .history button:hover { border-color: var(--accent); }
+  .history img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
+  .history .cap { padding: 6px 8px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; gap: 6px; align-items: center; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+  dialog { background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 12px; width: min(760px, 92vw); padding: 22px; }
+  dialog::backdrop { background: rgba(0,0,0,.6); }
+  #notesText { min-height: 50vh; font: 13px/1.5 ui-monospace, Menlo, monospace; }
+  .dlg-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px; }
+  @media (max-width: 1200px) { .work { grid-template-columns: 1fr; } }
+  @media (max-width: 860px) { main { grid-template-columns: 1fr; } aside { border-right: 0; border-bottom: 1px solid var(--line); } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Ethara <span>Image Agent</span></h1>
+  <span class="spacer"></span>
+  <button class="ghost" id="openSettings">OpenAI key</button>
+  <button class="ghost" id="editNotes">Lessons &amp; extra rules</button>
+</header>
+
+<main>
+  <aside>
+    <div>
+      <label for="caption">Post caption</label>
+      <textarea id="caption" placeholder="Paste the finished post caption. Claude finds its single claim and designs the image around it."></textarea>
+      <p class="hint">⌘/Ctrl + Enter to generate</p>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="platform">Platform</label>
+        <select id="platform">
+          <option value="linkedin">LinkedIn</option>
+          <option value="instagram">Instagram</option>
+          <option value="facebook">Facebook</option>
+          <option value="x">X</option>
+        </select>
+        <div class="size" id="sizeInfo"></div>
+      </div>
+      <div>
+        <label for="format">Format</label>
+        <select id="format">
+          <option value="">Auto (the brief picks)</option>
+          <optgroup label="Metaphorical — photographed by OpenAI">
+            <option value="concept_metaphor">A · Concept metaphor</option>
+          </optgroup>
+          <optgroup label="Diagrammatic — built as HTML by Claude">
+            <option value="systems_diagram">B · Systems diagram</option>
+            <option value="branded_infographic">C · Infographic</option>
+            <option value="data_chart">D · Data chart</option>
+          </optgroup>
+        </select>
+        <div class="size" id="formatInfo"></div>
+      </div>
+    </div>
+
+    <details>
+      <summary>Source (recommended for numbers and charts)</summary>
+      <div>
+        <div>
+          <label for="evidence">Source text <small>— paper abstract, article text</small></label>
+          <textarea id="evidence" placeholder="Every figure on the image must appear here or in the caption."></textarea>
+        </div>
+        <div>
+          <label for="from">Source line <small>— authors + paper id / URL</small></label>
+          <input id="from" placeholder="Lu et al., arXiv 2611.10866" />
+        </div>
+      </div>
+    </details>
+
+    <div>
+      <label for="kind">Visual type</label>
+      <select id="kind">
+        <option value="metaphor">Metaphorical — a real photograph that argues the claim</option>
+        <option value="diagram">Non-metaphorical — pick the best diagram, chart or infographic</option>
+      </select>
+      <div class="size" id="kindInfo"></div>
+    </div>
+
+    <div>
+      <label for="provider">Model provider</label>
+      <select id="provider">
+        <option value="claude">Claude (local CLI — no API key)</option>
+        <option value="openai">OpenAI (API key)</option>
+      </select>
+      <div class="size" id="providerInfo"></div>
+    </div>
+
+    <div id="keySection" style="border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--panel-2)">
+      <label for="setMode" style="margin-top:0">How the picture is made</label>
+      <select id="setMode">
+        <option value="html">Designed page — HTML/CSS rendered in a browser (exact text, brand colours, checked)</option>
+        <option value="image">Image model — generated by gpt-image, headline &amp; logo composited on top</option>
+      </select>
+      <p class="hint" id="modeHint"></p>
+
+      <label for="setImageModel">Image model</label>
+      <input id="setImageModel" spellcheck="false" placeholder="gpt-image-2.5-sunburst" />
+
+      <label for="setKey">OpenAI API key</label>
+      <input id="setKey" type="password" autocomplete="off" spellcheck="false" placeholder="sk-…" />
+      <p class="hint" id="keyState"></p>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="primary" style="width:auto" id="saveKey">Save key</button>
+        <button class="ghost" style="width:auto" id="testKey">Test &amp; load models</button>
+      </div>
+      <p class="hint" id="testResult"></p>
+
+      <details style="margin-top:12px">
+        <summary>Models &amp; endpoint</summary>
+        <div class="row" style="margin-top:10px">
+          <div>
+            <label for="mBrief">Brief model</label>
+            <input id="mBrief" list="modelList" spellcheck="false" />
+          </div>
+          <div>
+            <label for="mDesign">Design model</label>
+            <input id="mDesign" list="modelList" spellcheck="false" />
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <label for="mQa">QA model <small>— must accept images (vision)</small></label>
+          <input id="mQa" list="modelList" spellcheck="false" />
+        </div>
+        <div style="margin-top:10px">
+          <label for="setBaseUrl">API base URL <small>— only for a proxy / compatible endpoint</small></label>
+          <input id="setBaseUrl" spellcheck="false" placeholder="https://api.openai.com/v1" />
+        </div>
+        <datalist id="modelList"></datalist>
+      </details>
+      <p class="hint" style="margin-top:10px">Saved to <code>settings.local.json</code> (owner-only). Sent only to api.openai.com; never stored in an image record.</p>
+    </div>
+
+    <button class="primary" id="explore">Explore ideas</button>
+    <p class="hint">Step 1 proposes ideas you can judge — nothing is drawn yet. You approve one, then the image is made.</p>
+    <button class="ghost" id="go" style="width:100%;margin-top:8px">Skip ideas, generate now</button>
+    <div class="error" id="error"></div>
+  </aside>
+
+  <section>
+    <div class="work">
+      <div>
+        <div class="flow" id="flow" hidden>
+          <span id="f1">1 · Ideas</span> → <span id="f2">2 · Approve</span> → <span id="f3">3 · Image</span>
+        </div>
+
+        <div id="conceptPanel" hidden style="margin-bottom:16px">
+          <div id="conceptHead"></div>
+          <div class="concepts" id="conceptList"></div>
+          <div class="actions" style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="primary" id="approve" style="width:auto" disabled>Approve &amp; generate image</button>
+            <button class="ghost" id="regen">Show different ideas</button>
+            <button class="ghost" id="ownBtn">Write my own</button>
+          </div>
+          <div id="ownBox" hidden style="margin-top:12px">
+            <label for="ownText">Your metaphor — describe the scene in your own words</label>
+            <textarea id="ownText" placeholder="e.g. a lighthouse keeper refilling the lamp at dawn while the beam still turns — the upkeep nobody sees keeps the signal running"></textarea>
+            <p class="hint">The brief will stage it as a photograph, filling in materials, light and framing.</p>
+            <button class="ghost" id="ownUse" style="margin-top:8px;width:auto">Use this idea</button>
+          </div>
+        </div>
+
+        <div class="stage" id="stage"><div class="empty">Your image will appear here.</div></div>
+      </div>
+      <div class="side">
+        <div class="card" id="progressCard" hidden>
+          <h3>Progress</h3>
+          <div class="log" id="log"></div>
+        </div>
+        <div class="card" id="resultCard" hidden>
+          <h3>Result</h3>
+          <div class="kv" id="kv"></div>
+          <div class="actions" style="margin-top:10px">
+            <a id="download" download><button class="ghost">Download JPG</button></a>
+            <a id="openHtml" target="_blank" rel="noopener"><button class="ghost">HTML</button></a>
+          </div>
+        </div>
+        <div class="card" id="issuesCard" hidden>
+          <h3>Review notes</h3>
+          <div id="issues"></div>
+        </div>
+        <div class="card" id="editCard" hidden>
+          <h3>Edit this image</h3>
+          <textarea id="editBox" placeholder="e.g. open the gap a little so it reads at phone size — or ask a question: can the rail be lit more?"></textarea>
+          <p class="hint">Claude reads the image and writes the editing instruction; the image model applies it to this photograph. Everything else is preserved.</p>
+          <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+            <button class="primary" id="editGo" style="width:auto">Apply edit</button>
+            <button class="ghost" id="undoEdit" hidden>Undo</button>
+          </div>
+          <div id="editPlan" hidden style="margin-top:10px;border-top:1px solid var(--line);padding-top:10px">
+            <div class="kv" id="editPlanBody"></div>
+          </div>
+          <div id="beforeAfter" hidden style="margin-top:10px">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <div><div class="hint" style="margin-bottom:4px">Before</div><img id="beforeImg" style="width:100%;border-radius:6px;border:1px solid var(--line)"></div>
+              <div><div class="hint" style="margin-bottom:4px">After</div><img id="afterImg" style="width:100%;border-radius:6px;border:1px solid var(--accent)"></div>
+            </div>
+            <button class="ghost" id="redoEdit" style="margin-top:8px;width:100%">Try this edit again</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <h2>History</h2>
+    <div class="history" id="history"></div>
+  </section>
+</main>
+
+<dialog id="notesDlg">
+  <label for="notesText">Lessons &amp; extra rules (brand/notes.md) — given to Claude with every brief</label>
+  <textarea id="notesText"></textarea>
+  <div class="dlg-actions">
+    <button class="ghost" id="cancelNotes">Cancel</button>
+    <button class="primary" style="width:auto" id="saveNotes">Save</button>
+  </div>
+</dialog>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const FORMAT = { systems_diagram: "B · Systems diagram", branded_infographic: "C · Infographic", data_chart: "D · Data chart" };
+let config = null, current = null, busy = false, settingsState = null;
+let ideas = null, chosen = null, rejected = [];
+
+async function loadConfig() {
+  config = await (await fetch("/api/config")).json();
+  showSize();
+  applySettings(config.settings);
+  showFormat();
+  showKind();
+}
+
+// the form's provider box mirrors whatever is saved; picking here overrides for one run only
+function applySettings(st) {
+  if (!st) return;
+  $("provider").value = st.provider;
+  paintKeyState(st);
+  toggleKeySection();
+}
+function showProvider() {
+  const p = $("provider").value;
+  const st = settingsState;
+  if (p === "claude") { $("providerInfo").textContent = "Claude via local CLI · no API key needed"; return; }
+  $("providerInfo").innerHTML = st?.openai?.hasKey
+    ? `OpenAI · key ${esc(st.openai.keyHint)}${st.keySource === "env" ? " (.env)" : ""} · ${esc(st.openai.models.design)}`
+    : '<span style="color:var(--warn)">No API key set — add one below or in .env</span>';
+}
+$("provider").addEventListener("change", () => { showProvider(); toggleKeySection(); });
+
+// the chosen format decides which engine renders it
+function showFormat() {
+  const f = $("format").value;
+  const r = config?.routing?.[f];
+  $("formatInfo").innerHTML = !f
+    ? "The brief chooses: a metaphor is photographed, a diagram is built as HTML."
+    : r?.render === "image"
+      ? `Metaphorical → photographed by ${esc(settingsState?.openai?.imageModel || "the image model")}, headline composited by code`
+      : "Diagrammatic → designed as HTML and checked in the browser";
+}
+$("format").addEventListener("change", showFormat);
+function showSize() {
+  const p = $("platform").value, name = config.defaults[p], [w, h] = config.placements[p][name];
+  $("sizeInfo").textContent = `${w} × ${h} px · ${name.replace(/_/g, " ")}`;
+}
+$("platform").addEventListener("change", showSize);
+
+function showError(msg) { $("error").textContent = msg || ""; $("error").style.display = msg ? "block" : "none"; }
+
+function setBusy(on, label) {
+  busy = on;
+  for (const id of ["go", "editGo", "explore", "approve", "regen", "ownBtn"]) {
+    const el = $(id);
+    if (el) el.disabled = on;
+  }
+  // the approve button stays disabled until something is actually chosen
+  if (!on && $("approve")) $("approve").disabled = !chosen;
+  $("go").textContent = on && label === "gen" ? "Generating…" : "Skip ideas, generate now";
+  $("explore").textContent = on && label === "explore" ? "Thinking…" : "Explore ideas";
+  $("approve").textContent = on && label === "gen" ? "Generating…" : "Approve & generate image";
+  $("editGo").textContent = on && label === "edit" ? "Applying…" : "Apply edit";
+}
+
+function showLog(lines) {
+  $("progressCard").hidden = false;
+  $("log").innerHTML = lines.map((l) => `<b>${String(l.t).padStart(3)}s</b>  ${esc(l.m)}`).join("\n");
+  $("log").scrollTop = $("log").scrollHeight;
+}
+
+function showSpinner(text) {
+  $("stage").innerHTML = `<div class="empty"><div class="spinner"></div>${esc(text)} <span id="secs">0s</span></div>`;
+}
+
+function showImage(r) {
+  current = r;
+  $("stage").innerHTML = "";
+  const img = new Image();
+  img.src = r.jpg + "?t=" + Date.now();
+  img.alt = r.brief?.alt_text || r.title || "";
+  $("stage").appendChild(img);
+  $("download").href = r.jpg;
+  $("download").setAttribute("download", r.id + ".jpg");
+  $("openHtml").href = r.html;
+  const st = r.status || "ready";
+  $("kv").innerHTML = `
+    <div><span class="badge b-${st}">${st === "ready" ? "READY" : "NEEDS REVIEW"}</span> <span class="badge b-fmt">${esc(FORMAT[r.format] || r.format || "")}</span></div>
+    ${r.brief?.thesis ? `<div><span>Thesis:</span> ${esc(r.brief.thesis)}</div>` : ""}
+    ${r.qa ? `<div><span>Claude QA:</span> ${esc(r.qa.verdict)}${r.qa.summary ? " — " + esc(r.qa.summary) : ""}</div>` : ""}
+    <div><span>Canvas:</span> ${esc(r.canvas || "")} · ${esc(r.platform || "")}${r.logo ? ` · logo ${esc(r.logo)}` : ""}</div>
+    ${r.edit ? `<div><span>Edit:</span> ${esc(r.edit)}</div>` : ""}`;
+  $("resultCard").hidden = false;
+  const items = [
+    ...(r.checks?.problems || []).map((p) => `Code check: ${p}`),
+    ...(r.qa?.defects || []).map((d) => `QA: ${d.where ? d.where + " — " : ""}${d.problem}`),
+    ...(r.checks?.notes || []).map((p) => `Note: ${p}`),
+  ];
+  $("issues").innerHTML = items.length ? `<ul class="issues">${items.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>` : '<p class="hint">No issues found.</p>';
+  $("issuesCard").hidden = false;
+  $("editCard").hidden = !r.brief;
+}
+
+async function runJob(startUrl, payload, label) {
+  showError("");
+  setBusy(true, label);
+  $("resultCard").hidden = true; $("issuesCard").hidden = true;
+  showSpinner(label === "edit" ? "Applying your edit…" : "Claude is working on your image…");
+  showLog([]);
+  const t0 = Date.now();
+  const timer = setInterval(() => { const s = $("secs"); if (s) s.textContent = Math.round((Date.now() - t0) / 1000) + "s"; }, 1000);
+  try {
+    const res = await fetch(startUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Could not start");
+    for (;;) {
+      await new Promise((r) => setTimeout(r, 1500));
+      const j = await (await fetch("/api/jobs/" + data.job)).json();
+      if (j.error && !j.status) throw new Error(j.error);
+      showLog(j.log || []);
+      if (j.status === "done") { showImage(j.result); loadHistory(); break; }
+      if (j.status === "failed") throw new Error(j.error);
+    }
+  } catch (e) {
+    $("stage").innerHTML = '<div class="empty">Could not make the image.</div>';
+    showError(e.message);
+  } finally {
+    clearInterval(timer);
+    setBusy(false);
+  }
+}
+
+// ---- step 0/1: ideas -----------------------------------------------------------------
+function showKind() {
+  const m = $("kind").value === "metaphor";
+  $("kindInfo").textContent = m
+    ? "A photograph staged from the caption — drawn by the image model, headline added by code."
+    : "The caption is analysed and the best of systems diagram, infographic or data chart is used.";
+  $("format").parentElement.style.display = m ? "none" : "";
+}
+$("kind").addEventListener("change", showKind);
+
+function setFlow(step) {
+  $("flow").hidden = false;
+  ["f1","f2","f3"].forEach((id, i) => $(id).className = i === step ? "on" : "");
+}
+
+function conceptCard(c) {
+  const sc = c.scene || {};
+  const objs = (sc.objects || []).map((o) => `<dd>${esc(o.what)} — <i>${esc(o.material || "")}</i>, ${esc(o.where || "")} · stands for ${esc(o.role || "")}</dd>`).join("");
+  const ppl = sc.people?.present ? `${esc(sc.people.who || "")} — ${esc(sc.people.doing || "")} (${esc(sc.people.framing || "")})` : "none";
+  const tag = [c.approach || c.strategy, c.domain].filter(Boolean).join(" · ").replace(/_/g, " ");
+  const mapping = (c.mapping || []).map((m) => `<dd><b>${esc(m.element)}</b> → ${esc(m.represents)}</dd>`).join("");
+  const calls = (sc.callouts || []).map((o) => esc(o.label)).join(", ");
+  return `<div class="concept" data-id="${esc(c.id)}">
+    <div class="fam">${esc(tag || c.family || "")}${sc.people?.present ? "" : " · object-led"}</div>
+    <h4>${esc(c.label || c.idea || "")}</h4>
+    <p>${esc(c.idea || "")}</p>
+    ${c.explanation ? `<p>${esc(c.explanation)}</p>` : c.analogy ? `<p><b>The analogy:</b> ${esc(c.analogy)}</p>` : ""}
+    ${c.viewer_understands ? `<p><b>A viewer takes away:</b> ${esc(c.viewer_understands)}</p>` : ""}
+    ${c.how_it_communicates ? `<p><b>How it communicates:</b> ${esc(c.how_it_communicates)}</p>` : ""}
+    ${c.relevance || c.why ? `<p><b>Why this caption:</b> ${esc(c.relevance || c.why)}</p>` : ""}
+    ${c.ambiguity ? `<p><b>Could be misread as:</b> ${esc(c.ambiguity)}</p>` : ""}
+    ${calls ? `<p><b>Labelled:</b> ${calls}</p>` : ""}
+    <details><summary>Visual instructions</summary><dl>
+      ${mapping ? `<dt>What each element means</dt>${mapping}` : ""}
+      <dt>Shot</dt><dd>${esc(sc.subject || "")}</dd>
+      <dt>Moment</dt><dd>${esc(sc.action || "")}</dd>
+      <dt>Setting</dt><dd>${esc(sc.setting || "")}</dd>
+      <dt>Objects</dt>${objs}
+      <dt>People</dt><dd>${ppl}</dd>
+      ${(sc.callouts || []).length ? `<dt>Callouts</dt>${(sc.callouts || []).map((o) => `<dd>${esc(o.label)} → ${esc(o.points_at || "")} (${Math.round(o.x)}%, ${Math.round(o.y)}%)</dd>`).join("")}` : ""}
+      <dt>Light</dt><dd>${esc(sc.light || "")}</dd>
+      <dt>Camera</dt><dd>${esc(sc.camera || "")}</dd>
+    </dl></details>
+  </div>`;
+}
+
+function renderConcepts(r) {
+  ideas = r; chosen = null;
+  $("conceptPanel").hidden = false;
+  $("approve").disabled = true;
+  $("ownBox").hidden = true;
+  setFlow(1);
+  if (r.kind === "metaphor") {
+    const ip = r.interpretation || {};
+    $("conceptHead").innerHTML =
+      (ip.central_message ? `<div class="rec" style="margin-bottom:12px"><div class="fam" style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent-2)">How the caption was read</div>
+        <p class="hint" style="margin-top:6px"><b>Central message:</b> ${esc(ip.central_message)}</p>
+        ${ip.tension ? `<p class="hint"><b>The tension:</b> ${esc(ip.tension)}</p>` : ""}
+        ${ip.takeaway ? `<p class="hint"><b>Takeaway:</b> ${esc(ip.takeaway)}</p>` : ""}
+        ${ip.viewer_goal ? `<p class="hint"><b>A viewer should understand:</b> ${esc(ip.viewer_goal)}</p>` : ""}</div>` : "") +
+      `<p class="hint" style="margin-bottom:10px"><b>Thesis:</b> ${esc(r.thesis || "")} · pick one, ask for different ideas, or write your own.</p>`;
+    $("conceptList").innerHTML = r.concepts.map(conceptCard).join("");
+    $("conceptList").querySelectorAll(".concept").forEach((el) => {
+      el.onclick = () => {
+        $("conceptList").querySelectorAll(".concept").forEach((x) => x.classList.remove("sel"));
+        el.classList.add("sel");
+        chosen = r.concepts.find((c) => c.id === el.dataset.id);
+        $("approve").disabled = false;
+      };
+    });
+    $("regen").style.display = ""; $("ownBtn").style.display = "";
+  } else {
+    // non-metaphorical: the analysis picked a format; show the reasoning and let it be overridden
+    const alts = (r.alternatives || []).map((a) => `<dd><b>${esc(a.format)}</b> — ${esc(a.why_not || "")}</dd>`).join("");
+    const warn = (r.warnings || []).map((w) => `<dd style="color:var(--warn)">${esc(w)}</dd>`).join("");
+    $("conceptHead").innerHTML = "";
+    $("conceptList").innerHTML = `<div class="rec" style="grid-column:1/-1">
+      <div class="fam" style="color:var(--accent-2);font-size:10px;text-transform:uppercase;letter-spacing:.08em">Recommended format</div>
+      <h4 style="margin:4px 0 6px;color:#fff;font-size:15px">${esc(r.recommended)}</h4>
+      <p class="hint"><b>Thesis:</b> ${esc(r.thesis || "")}</p>
+      <p class="hint"><b>Why:</b> ${esc(r.reason || "")}</p>
+      <p class="hint"><b>It will show:</b> ${esc(r.what_it_shows || "")}</p>
+      <details style="margin-top:8px"><summary style="font-size:11px;color:var(--accent-2);cursor:pointer">Why not the others</summary><dl style="font-size:11.5px;color:var(--muted)">${alts}${warn ? "<dt style=\"color:var(--warn)\">Watch out</dt>" + warn : ""}</dl></details>
+      <div style="margin-top:10px">
+        <label for="useFormat">Use this format</label>
+        <select id="useFormat">
+          <option value="systems_diagram">B · Systems diagram</option>
+          <option value="branded_infographic">C · Infographic</option>
+          <option value="data_chart">D · Data chart</option>
+        </select>
+      </div>
+    </div>`;
+    $("useFormat").value = r.recommended;
+    chosen = { format: r.recommended };
+    $("approve").disabled = false;
+    $("useFormat").onchange = () => (chosen = { format: $("useFormat").value });
+    $("regen").style.display = "none"; $("ownBtn").style.display = "none";
+  }
+}
+
+async function runIdeate(extraExclude) {
+  if (busy) return;
+  const caption = $("caption").value.trim();
+  if (!caption) return showError("Paste the post caption first.");
+  showError(""); setBusy(true, "explore");
+  $("conceptPanel").hidden = true;
+  showSpinner("Thinking of ideas…");
+  setFlow(0);
+  try {
+    const payload = {
+      caption, evidence: $("evidence").value, from: $("from").value,
+      kind: $("kind").value, provider: $("provider").value,
+      exclude: extraExclude ? rejected : [],
+    };
+    const res = await fetch("/api/ideate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Could not start");
+    let r = null;
+    for (;;) {
+      await new Promise((f) => setTimeout(f, 2000));
+      const j = await (await fetch("/api/jobs/" + data.job)).json();
+      if (j.log?.length) showLog(j.log);
+      if (j.status === "done") { r = j.result; break; }
+      if (j.status === "failed") throw new Error(j.error || "Ideation failed");
+    }
+    renderConcepts(r);
+    $("stage").innerHTML = '<div class="empty">Approve an idea and the image will appear here.</div>';
+  } catch (e) {
+    showError(e.message);
+    $("stage").innerHTML = '<div class="empty">Your image will appear here.</div>';
+  } finally {
+    setBusy(false);
+  }
+}
+
+$("explore").onclick = () => runIdeate(false);
+$("regen").onclick = () => {
+  // remember what was shown so the next round proposes genuinely different ideas
+  if (ideas?.concepts) rejected = rejected.concat(ideas.concepts.map((c) => c.label || c.idea)).slice(-12);
+  runIdeate(true);
+};
+$("ownBtn").onclick = () => { $("ownBox").hidden = !$("ownBox").hidden; if (!$("ownBox").hidden) $("ownText").focus(); };
+$("ownUse").onclick = () => {
+  const t = $("ownText").value.trim();
+  if (!t) return showError("Describe your metaphor first.");
+  showError("");
+  chosen = { id: "own", label: "Your idea", idea: t, custom: true, family: "cross_domain" };
+  $("conceptList").querySelectorAll(".concept").forEach((x) => x.classList.remove("sel"));
+  $("approve").disabled = false;
+  $("ownBox").hidden = true;
+  $("conceptHead").innerHTML = `<p class="hint" style="margin-bottom:10px"><b>Your idea:</b> ${esc(t)} — approve to build it.</p>`;
+};
+
+$("approve").onclick = () => {
+  if (busy || !chosen) return;
+  setFlow(2);
+  const metaphor = ideas?.kind === "metaphor";
+  runJob("/api/generate", {
+    caption: $("caption").value.trim(),
+    evidence: $("evidence").value, from: $("from").value,
+    platform: $("platform").value,
+    forcedFormat: metaphor ? "concept_metaphor" : chosen.format,
+    provider: $("provider").value,
+    concept: metaphor ? chosen : null,
+  }, "gen");
+};
+
+$("go").onclick = () => {
+  if (busy) return;
+  const caption = $("caption").value.trim();
+  if (!caption) return showError("Paste the post caption first.");
+  runJob("/api/generate", { caption, evidence: $("evidence").value, from: $("from").value, platform: $("platform").value, forcedFormat: $("format").value, provider: $("provider").value }, "gen");
+};
+$("caption").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) $("go").click(); });
+let editStack = [], lastEditReq = "";
+
+function showEditResult(r) {
+  // the plan Claude wrote, so the instruction is visible and not a black box
+  const p = r.editPlan, c = r.editCheck;
+  if (p) {
+    $("editPlan").hidden = false;
+    const rows = [
+      ["Understood", p.understood || ""],
+      ["Instruction sent to the image model", p.edit_prompt || "(words only — the photograph was not re-rendered)"],
+      ["Changes", (p.changes || []).join(" · ")],
+      ["Preserved", (p.preserve || []).join(" · ")],
+    ];
+    if (c) rows.push(["Check", `${c.verdict}${c.missing?.length ? " — missing: " + c.missing.join("; ") : ""}${c.drifted?.length ? " — drifted: " + c.drifted.join("; ") : ""}`]);
+    $("editPlanBody").innerHTML = rows.filter((x) => x[1]).map(([k, v]) => `<div><b>${esc(k)}</b><div class="hint" style="margin-top:2px">${esc(v)}</div></div>`).join("");
+  }
+  if (editStack.length) {
+    const prevRec = editStack[editStack.length - 1];
+    $("beforeAfter").hidden = false;
+    $("beforeImg").src = prevRec.jpg + "?t=" + Date.now();
+    $("afterImg").src = r.jpg + "?t=" + Date.now();
+    $("undoEdit").hidden = false;
+  }
+}
+
+$("undoEdit").onclick = () => {
+  const back = editStack.pop();
+  if (!back) return;
+  showImage(back);
+  current = back;
+  $("beforeAfter").hidden = true;
+  $("editPlan").hidden = true;
+  $("undoEdit").hidden = !editStack.length;
+};
+$("redoEdit").onclick = () => { if (lastEditReq) { $("editBox").value = lastEditReq; $("editGo").click(); } };
+
+$("editGo").onclick = () => {
+  if (busy || !current) return;
+  const request = $("editBox").value.trim();
+  if (!request) return showError("Say what to change.");
+  editStack.push(current);
+  lastEditReq = request;
+  runJob("/api/edit", { id: current.id, request }, "edit");
+};
+
+async function loadHistory() {
+  const items = await (await fetch("/api/history")).json();
+  $("history").innerHTML = items.length ? "" : '<p class="hint">Nothing yet.</p>';
+  for (const it of items) {
+    const b = document.createElement("button");
+    b.title = it.title;
+    const color = it.status === "ready" ? "var(--ok)" : "var(--warn)";
+    b.innerHTML = `<img loading="lazy" src="${esc(it.jpg)}" alt=""><div class="cap"><span class="dot" style="background:${color}"></span>${esc(it.formatCode || "")} · ${esc(it.title)}</div>`;
+    b.onclick = async () => {
+      const r = await (await fetch("/api/images/" + encodeURIComponent(it.id))).json();
+      $("progressCard").hidden = true;
+      // a question came back instead of an image: ask it, change nothing
+      if (r && r.clarify) {
+        editStack.pop();
+        $("editPlan").hidden = false;
+        $("editPlanBody").innerHTML =
+          `<div><b>Needs a decision</b><div class="hint" style="margin-top:2px;color:var(--warn)">${esc(r.question)}</div></div>` +
+          `<div class="hint" style="margin-top:6px">Answer it in the box above and apply again. The image is unchanged.</div>`;
+        $("beforeAfter").hidden = true;
+        return;
+      }
+      showImage(r);
+      if (r.editPlan || r.edit) showEditResult(r);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+    $("history").appendChild(b);
+  }
+}
+
+// the key section lives in the sidebar and follows the provider dropdown
+function paintMode() {
+  const img = $("setMode").value === "image";
+  $("setImageModel").parentElement.querySelector('label[for="setImageModel"]').style.display = img ? "" : "none";
+  $("setImageModel").style.display = img ? "" : "none";
+  $("modeHint").innerHTML = img
+    ? 'The image model draws the scene; the title, subhead and logo are drawn by code on top so the text is always correct. The text-readback and alignment checks do not apply.'
+    : 'Claude or GPT writes the CSS/HTML; the browser renders it and every string, size and edge is checked.';
+}
+$("setMode").addEventListener("change", paintMode);
+
+function toggleKeySection() {
+  $("keySection").style.display = $("provider").value === "openai" ? "" : "none";
+}
+function paintKeyState(st) {
+  settingsState = st;
+  $("setBaseUrl").value = st.openai.baseUrl;
+  $("setMode").value = st.mode;
+  $("setImageModel").value = st.openai.imageModel || "";
+  paintMode();
+  $("mBrief").value = st.openai.models.brief;
+  $("mDesign").value = st.openai.models.design;
+  $("mQa").value = st.openai.models.qa;
+  $("setKey").value = "";
+  $("setKey").placeholder = st.openai.hasKey ? "leave blank to keep the saved key" : "sk-…";
+  const el = $("keyState");
+  const fromEnv = st.keySource === "env";
+  // a key in .env wins over anything typed here, so say so plainly instead of letting Save look broken
+  $("setKey").disabled = fromEnv;
+  $("saveKey").disabled = fromEnv;
+  if (fromEnv) {
+    el.innerHTML = `<span style="color:var(--ok)">Key loaded from .env (${esc(st.openai.keyHint)})</span> — edit the <code>.env</code> file to change it. It overrides anything saved here.`;
+  } else if (st.openai.hasKey) {
+    el.innerHTML = `<span style="color:var(--ok)">Key saved (${esc(st.openai.keyHint)})</span> — paste a new one to replace it, or put it in <code>.env</code>`;
+  } else {
+    el.innerHTML = '<span style="color:var(--warn)">No key yet</span> — paste one and press Save, or add <code>OPENAI_API_KEY</code> to <code>.env</code>';
+  }
+  showProvider();
+}
+$("openSettings").onclick = () => {
+  $("provider").value = "openai";
+  toggleKeySection(); showProvider();
+  $("keySection").scrollIntoView({ behavior: "smooth", block: "center" });
+  $("setKey").focus();
+};
+
+async function putSettings(extra) {
+  const payload = {
+    provider: $("provider").value,
+    mode: $("setMode").value,
+    openai: {
+      baseUrl: $("setBaseUrl").value.trim(),
+      imageModel: $("setImageModel").value.trim(),
+      models: { brief: $("mBrief").value.trim(), design: $("mDesign").value.trim(), qa: $("mQa").value.trim() },
+      ...extra,
+    },
+  };
+  return (await fetch("/api/settings", {
+    method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload),
+  })).json();
+}
+
+$("saveKey").onclick = async () => {
+  const typed = $("setKey").value.trim();
+  const st = await putSettings(typed ? { apiKey: typed } : {});   // blank = keep the stored key
+  paintKeyState(st);
+  const el = $("testResult");
+  el.style.color = "var(--ok)";
+  el.textContent = typed ? "Saved." : "Models and endpoint saved (key unchanged).";
+};
+
+$("testKey").onclick = async () => {
+  const el = $("testResult");
+  el.textContent = "Checking…"; el.style.color = "var(--muted)";
+  const r = await (await fetch("/api/settings/test", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ apiKey: $("setKey").value.trim(), baseUrl: $("setBaseUrl").value.trim() }),
+  })).json();
+  if (r.ok) {
+    el.style.color = "var(--ok)";
+    el.textContent = `Key works — ${r.count} models available (see suggestions under Models & endpoint).`;
+    $("modelList").innerHTML = r.models.map((m) => `<option value="${esc(m)}"></option>`).join("");
+  } else {
+    el.style.color = "var(--err)";
+    el.textContent = r.error || "Could not reach OpenAI";
+  }
+};
+
+$("editNotes").onclick = async () => {
+  $("notesText").value = (await (await fetch("/api/notes")).json()).text;
+  $("notesDlg").showModal();
+};
+$("cancelNotes").onclick = () => $("notesDlg").close();
+$("saveNotes").onclick = async () => {
+  await fetch("/api/notes", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: $("notesText").value }) });
+  $("notesDlg").close();
+};
+
+loadConfig();
+loadHistory();
+</script>
+</body>
+</html>

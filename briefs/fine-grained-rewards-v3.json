@@ -1,0 +1,22 @@
+{
+  "width": 1080,
+  "height": 1080,
+  "format": "data_chart",
+  "theme": "dark",
+  "thesis": "Rewarding the steps of studying and reasoning, not just the final answer, raised proof accuracy far more than retrieval alone.",
+  "rationale": "The two bars show exactly what the caption claims: proof accuracy rose from 51.5% to 79.5% once the model was rewarded for the steps of studying and reasoning rather than only the final answer, making the fine-grained-reward argument legible at a glance.",
+  "title": "Fine-Grained Rewards *Lift* Proof Accuracy",
+  "subhead": "Rewarding the study process beats scoring only the final answer",
+  "nodes": [],
+  "edges": [],
+  "insight_cards": [],
+  "chart": {
+    "metric": "Proof accuracy, Intern-S2-Preview-35B",
+    "bars": [
+      { "label": "Before fine-grained rewards", "value": "51.5%", "highlight": false },
+      { "label": "After fine-grained rewards", "value": "79.5%", "highlight": true }
+    ],
+    "source": "Source: Kong et al., BookNavigator study"
+  },
+  "layout_wishes": "direction top_to_bottom, spacing airy, finish glow"
+}

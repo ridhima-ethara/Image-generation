@@ -1,0 +1,150 @@
+{
+ "name": "Ethara",
+ "audience": "AI engineers, ML researchers and technical founders building agentic systems, evaluation harnesses and RL post-training pipelines",
+ "accents": {
+  "primary": "#8B2CF5",
+  "deep": "#5E1BC7",
+  "bright": "#A855F7",
+  "glow": "#C084FC",
+  "magenta": "#E9096F"
+ },
+ "neutrals": [
+  "#000000",
+  "#0B0E14",
+  "#121724",
+  "#1F2433",
+  "#3A3F55",
+  "#8A8FA5",
+  "#E6E8EF",
+  "#F6F7FA",
+  "#FFFFFF"
+ ],
+ "functional": {
+  "state": "#3B82F6",
+  "action": "#22C55E",
+  "environment": "#F59E0B",
+  "reward": "#EF4444"
+ },
+ "fonts": {
+  "headline": "Roboto",
+  "support": "DM Sans"
+ },
+ "logo": {
+  "on_dark": "ethara-logo-light-text-trimmed.png",
+  "on_light": "ethara-logo-dark-text-trimmed.png",
+  "height_share": 0.042,
+  "aspect": 5.68,
+  "align": "title",
+  "margin_share": 0.06
+ },
+ "placements": {
+  "linkedin": {
+   "feed_square": [
+    1080,
+    1080
+   ],
+   "feed_portrait": [
+    1080,
+    1350
+   ],
+   "feed_landscape": [
+    1200,
+    627
+   ],
+   "carousel": [
+    1080,
+    1080
+   ],
+   "personal_banner": [
+    1584,
+    396
+   ]
+  },
+  "instagram": {
+   "feed_portrait": [
+    1080,
+    1350
+   ],
+   "feed_square": [
+    1080,
+    1080
+   ],
+   "story": [
+    1080,
+    1920
+   ]
+  },
+  "facebook": {
+   "feed_square": [
+    1080,
+    1080
+   ],
+   "feed_portrait": [
+    1080,
+    1350
+   ],
+   "story": [
+    1080,
+    1920
+   ]
+  },
+  "x": {
+   "feed_landscape": [
+    1600,
+    900
+   ]
+  },
+  "youtube": {
+   "thumbnail": [
+    1280,
+    720
+   ]
+  }
+ },
+ "default_placement": {
+  "linkedin": "feed_square",
+  "instagram": "feed_portrait",
+  "facebook": "feed_square",
+  "x": "feed_landscape",
+  "youtube": "thumbnail"
+ },
+ "models": {
+  "brief": {
+   "model": "opus",
+   "effort": "medium",
+   "timeout_s": 420,
+   "repairs": 2
+  },
+  "design": {
+   "model": "opus",
+   "effort": "medium",
+   "timeout_s": 600,
+   "rounds": 2
+  },
+  "qa": {
+   "model": "sonnet",
+   "effort": "low",
+   "timeout_s": 240,
+   "corrections": 1
+  }
+ },
+ "evidence_chars": 6000,
+ "routing": {
+  "concept_metaphor": {
+   "category": "metaphorical",
+   "render": "image"
+  },
+  "systems_diagram": {
+   "category": "diagrammatic",
+   "render": "html"
+  },
+  "branded_infographic": {
+   "category": "diagrammatic",
+   "render": "html"
+  },
+  "data_chart": {
+   "category": "diagrammatic",
+   "render": "html"
+  }
+ }
+}
